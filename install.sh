@@ -70,8 +70,10 @@ function install_vim_plugin() {
 }
 
 function prompt_vim_plugin_install() {
-    if prompt_install "$1"; then
-        install_vim_plugin "$2" "$1"
+    if [[ ! -e ~/.vim/bundle/"$1" ]]; then
+        if prompt_install "$1"; then
+            install_vim_plugin "$2" "$1"
+        fi
     fi
 }
 
@@ -172,6 +174,7 @@ if prompt_install "vim plugins"; then
     all_plugins=( \
         ["vim-sensible"]="git://github.com/tpope/vim-sensible.git" \
         ["vim-better-whitespace"]="git://github.com/ntpeters/vim-better-whitespace.git" \
+        ["tagbar"]="git://github.com/majutsushi/tagbar" \
         ["vim-surround"]="git://github.com/tpope/vim-surround.git" \
         ["vim-misc"]="https://github.com/xolox/vim-misc.git" \
         ["vim-fugitive"]="https://github.com/tpope/vim-fugitive.git" \
