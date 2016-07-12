@@ -105,7 +105,7 @@ if prompt_install "vim plugins"; then
         mkdir -p ~/.vim/autoload ~/.vim/bundle && \
             curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
     else
-        if [[ -f ~/.vimrc ]]; then
+        if [[ -f ~/.vimrc && ! -f ~/.vim/autoload/pathogen.vim ]]; then
             sed -i.bak '/pathogen/d' ~/.vimrc
         fi
     fi
