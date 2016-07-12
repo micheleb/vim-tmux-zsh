@@ -72,12 +72,6 @@ else
     fi
 fi
 
-if prompt_install "vim Syntastic"; then
-    if [[ -f ~/.vimrc ]]; then
-        sed -i.bak 'let g:/d' ~/.vimrc
-    fi
-fi
-
 if prompt_install "ZSH"; then
     run_as_root apt-get install zsh
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
