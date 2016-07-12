@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# we need bash 4 to use associative arrays
+if ((BASH_VERSINFO[0] < 4)); then
+    echo "Sorry, we need bash version 4 or higher to run this script"
+fi
+
 # cd into the script's folder; on Mac OS: readlink doesn't have the -f option
 # by default, but package coreutils contains a greadlink command that does
 is_mac_os=0
@@ -39,16 +44,26 @@ function prompt_install() {
     [[ ${do_install} == "" || ${do_install} == "y" || ${do_install} == "Y" ]]
 }
 
+function install_vim_plugin() {
+    cd ~/.vim/bundle
+    git clone "$1" "$2"
+}
+
 function prompt_vim_plugin_install() {
     if prompt_install "$1"; then
-        cp -r .vim/bundle/"$1" ~/.vim/bundle
+        install_vim_plugin "$2" "$1"
     fi
 }
 
 # only install the required scripts
-read -p "Copy vim config file? [Y/n] " install_vim
+read -p "Copy vim configuration? [Y/n] " install_vim
 if [[ ${install_vim} != "n" && ${install_vim} != "N" ]]; then
     cp .vimrc ~/
+    if [[ ! -e ~/.vim ]]; then
+        mkdir ~/.vim
+    fi
+    cp -r .vim/colors ~/.vim/
+    cp -r .vim/syntax ~/.vim/
 fi
 
 if prompt_install "vim powerline"; then
@@ -104,17 +119,31 @@ if prompt_install "vim plugins"; then
         fi
     fi
 
-    all_plugins=( "vim-sensible" "vim-better-whitespace" "vim-surround" \
-        "vim-misc" "vim-fugitive" "nerdtree" "syntastic" "YouCompleteMe" \
-        "numbers.vim" "vim-javascript" "vim-jsx" "typescript-vim" \
-        "vim-snipmate" "ctrlp.vim" )
+    declare -A all_plugins
+
+    all_plugins=( \
+        ["vim-sensible"]="git://github.com/tpope/vim-sensible.git" \
+        ["vim-better-whitespace"]="git://github.com/ntpeters/vim-better-whitespace.git" \
+        ["vim-surround"]="git://github.com/tpope/vim-surround.git" \
+        ["vim-misc"]="https://github.com/xolox/vim-misc.git" \
+        ["vim-fugitive"]="https://github.com/tpope/vim-fugitive.git" \
+        ["nerdtree"]="https://github.com/scrooloose/nerdtree.git" \
+        ["syntastic"]="https://github.com/scrooloose/syntastic.git" \
+        ["YouCompleteMe"]="https://github.com/Valloric/YouCompleteMe.git" \
+        ["numbers.vim"]="https://github.com/myusuf3/numbers.vim.git" \
+        ["vim-javascript"]="https://github.com/pangloss/vim-javascript.git" \
+        ["vim-jsx"]="https://github.com/mxw/vim-jsx.git" \
+        ["typescript-vim"]="https://github.com/leafgarland/typescript-vim.git" \
+        ["vim-snipmate"]="https://github.com/garbas/vim-snipmate.git" \
+        ["ctrlp.vim"]="https://github.com/ctrlpvim/ctrlp.vim.git" )
+
     if prompt_install "all plugins"; then
-        for plugin in "${all_plugins[@]}"; do
-            cp -r .vim/bundle/${plugin} ~/.vim/bundle
+        for plugin_name in "${!all_plugins[@]}"; do
+            install_vim_plugin ${all_plugins[${plugin_name}]} ${plugin_name}
         done
     else
-        for plugin in "${all_plugins[@]}"; do
-            prompt_vim_plugin_install ${plugin}
+        for plugin_name in "${!all_plugins[@]}"; do
+            prompt_vim_plugin_install ${plugin_name} ${all_plugins[${plugin_name}]}
         done
     fi
 fi
