@@ -249,7 +249,7 @@ if [[ "${has_vim}" == "1" ]]; then
         fi
         # make sure that we're referencing the correct version of python in vimrc
         if [[ -f ~/.vimrc ]]; then
-            sed -i.bak "/python2.7/python${py_version}/g" ~/.vimrc
+            sed -i.bak "s/python2.7/python${py_version}/g" ~/.vimrc
         fi
     else
         if [[ -f ~/.vimrc ]]; then
