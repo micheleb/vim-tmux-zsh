@@ -112,8 +112,8 @@ if prompt_install "vim plugins"; then
 
     all_plugins=( "vim-sensible" "vim-better-whitespace" "vim-surround" \
         "vim-misc" "vim-fugitive" "nerdtree" "syntastic" "YouCompleteMe" \
-        "numbers" "vim-javascript" "vim-jsx" "typescript-vim" "vim-snipmate" \
-        "ctrlp.vim" )
+        "numbers.vim" "vim-javascript" "vim-jsx" "typescript-vim" \
+        "vim-snipmate" "ctrlp.vim" )
     if prompt_install "all plugins"; then
         for plugin in "${all_plugins[@]}"; do
             cp -r .vim/bundle/${plugin} ~/.vim/bundle
