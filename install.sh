@@ -188,7 +188,6 @@ if prompt_install "ZSH"; then
     fi
     cd ${script_dir}
     cp .zshrc ~/
-    cp -r .zsh ~/
 fi
 
 if prompt_install "tmux"; then
