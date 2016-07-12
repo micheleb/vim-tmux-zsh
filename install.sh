@@ -43,6 +43,20 @@ function check_pip_installed() {
     fi
 }
 
+function check_node_installed() {
+    if [[ ! $(command -v npm) ]]; then
+        if prompt "Install nodeJS? (needed for JS autocomplete) [Y/n]"; then
+            if [[ ${is_mac_os} == "1" ]]; then
+                brew install node
+            else
+                curl -sL https://deb.nodesource.com/setup_4.x | \
+                    run_as_root -E bash -
+                run_as_root apt-get install -y nodejs
+            fi
+        fi
+    fi
+}
+
 function prompt_install() {
     read -p "Install $1? [Y/n] " do_install
     [[ ${do_install} == "" || ${do_install} == "y" || ${do_install} == "Y" ]]
@@ -74,7 +88,13 @@ function install_you_complete_me() {
     git submodule update --init --recursive
     run_as_root apt-get install build-essential cmake
     run_as_root apt-get install python-dev
-    ./install.py --clang-completer --tern-completer
+    check_node_installed
+    if [[ ! $(command -v npm) ]]; then
+        ./install.py --clang-completer
+    else
+        run_as_root npm install -g tern
+        ./install.py --clang-completer --tern-completer
+    fi
 }
 
 # only install the required scripts
@@ -168,6 +188,7 @@ if prompt_install "vim plugins"; then
         done
     fi
     if prompt "Install YouCompleteMe? [Y/n] "; then
+
         install_you_complete_me
     fi
 fi
