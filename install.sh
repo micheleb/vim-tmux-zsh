@@ -84,4 +84,11 @@ if [[ ${install_zsh} != "n" && ${install_zsh} != "N" ]]; then
     fi
 fi
 
+read -p "Install tmux? [Y/n] " install_tmux
+if [[ ${install_tmux} != "n" && ${install_tmux} != "N" ]]; then
+    run_as_root apt-get install tmux
+    cp .tmux.conf ~/
+    cp -r .tmux ~/
+fi
+
 echo "All done! \0/"
