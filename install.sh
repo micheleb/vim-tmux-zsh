@@ -29,19 +29,18 @@ function run_as_root() {
     fi
 }
 
+function prompt() {
+    read -p "$1" confirm
+    [[ ${confirm} == "" || ${confirm} == "y" || ${confirm} == "Y" ]]
+}
+
 function check_pip_installed() {
     if [[ ! $(command -v pip) ]]; then
-        read -p "Install pip? [Y/n] " i_pip
-        if [[ ${i_pip} != "n" && ${i_pip} != "N" ]]; then
+        if prompt "Install pip? [Y/n] "; then
             wget https://bootstrap.pypa.io/get-pip.py
             python get-pip.py
         fi
     fi
-}
-
-function prompt() {
-    read -p "$1" confirm
-    [[ ${confirm} == "" || ${confirm} == "y" || ${confirm} == "Y" ]]
 }
 
 function prompt_install() {
@@ -70,7 +69,7 @@ function install_you_complete_me() {
 }
 
 # only install the required scripts
-if confirm "Copy vim configuration? [Y/n] "; then
+if prompt "Copy vim configuration? [Y/n] "; then
     cp .vimrc ~/
     if [[ ! -e ~/.vim ]]; then
         mkdir ~/.vim
@@ -105,7 +104,7 @@ if prompt_install "ZSH"; then
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
     cp .zshrc ~/
     cp -r .zsh ~/
-    if confirm "Make ZSH the default shell? [Y/n] "; then
+    if prompt "Make ZSH the default shell? [Y/n] "; then
         chsh -s $(which zsh)
     fi
 fi
@@ -157,7 +156,7 @@ if prompt_install "vim plugins"; then
             prompt_vim_plugin_install ${plugin_name} ${all_plugins[${plugin_name}]}
         done
     fi
-    if confirm "Install YouCompleteMe? [Y/n] "; then
+    if prompt "Install YouCompleteMe? [Y/n] "; then
         install_you_complete_me
     fi
 fi
