@@ -38,12 +38,25 @@ fi
 
 read -p "Install vim powerline? [Y/n] " install_powerline
 if [[ ${install_powerline} != "n" && ${install_powerline} ]]; then
+    if [[ ! $(command -v pip) ]]; then
+        read -p "pip is needed to install powerline. Install it? [Y/n] " i_pip
+        if [[ ${i_pip} != "n" && ${i_pip} != "N" ]]; then
+            wget https://bootstrap.pypa.io/get-pip.py
+            python get-pip.py
+        fi
+    fi
+
     pip install --user powerline-status
     if [[ ${is_mac_os} == "0" ]]; then
        cp "Droid Sans Mono for Powerline.otf" ~/.fonts/
        run_as_root fc-cache -vf ~/.fonts/
     else
         echo "Install Droid Sans Mono for Powerline using Finder"
+    fi
+    # make sure that we're referencing the correct version of python in vimrc
+    py_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+    if [[ -f ~/.vimrc ]]; then
+        sed -i.bak 's/python2.7/python${py_version}/g' ~/.vimrc
     fi
 else
     if [[ -f ~/.vimrc ]]; then
@@ -64,6 +77,10 @@ if [[ ${install_zsh} != "n" && ${install_zsh} != "N" ]]; then
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
     cp .zshrc ~/
     cp -r .zsh ~/
+    read -p "Make ZSH the default shell? [Y/n] " make_default
+    if [[ ${make_default} != "n" && ${make_default} != "N" ]]; then
+        chsh -s $(which zsh)
+    fi
 fi
 
 echo "All done! \0/"
