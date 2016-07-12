@@ -15,6 +15,7 @@ else
     cd "$(dirname "$(readlink -f "$0")")"
 fi
 
+script_dir=$(pwd)
 is_root=0
 
 if [[ "$(id -u)" == "0" ]]; then
@@ -182,11 +183,12 @@ py_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2]
 if prompt_install "ZSH"; then
     run_as_root apt-get install zsh
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-    cp .zshrc ~/
-    cp -r .zsh ~/
     if prompt "Make ZSH the default shell? [Y/n] "; then
         chsh -s $(which zsh)
     fi
+    cd ${script_dir}
+    cp .zshrc ~/
+    cp -r .zsh ~/
 fi
 
 if prompt_install "tmux"; then
@@ -221,6 +223,8 @@ if [[ ${has_vim} == "0" || $(vim --version | grep -c '+python') == 0 ]]; then
         has_vim=1
     fi
 fi
+
+cd ${script_dir}
 
 # don't install vim stuff if vim isn't installed
 if [[ "${has_vim}" == "1" ]]; then
