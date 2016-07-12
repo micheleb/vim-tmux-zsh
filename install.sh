@@ -96,6 +96,7 @@ function install_you_complete_me() {
         git clone "https://github.com/ternjs/tern_for_vim.git" tern_for_vim
         cd tern_for_vim
         npm install tern
+        cd ~/.vim/bundle/YouCompleteMe
         ./install.py --clang-completer --tern-completer
     else
         ./install.py --clang-completer
