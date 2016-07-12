@@ -41,7 +41,7 @@ function prompt_install() {
 
 function prompt_vim_plugin_install() {
     if prompt_install "$1"; then
-        cp -r ~/.vim/bundle/"$1" ~/.vim/bundle
+        cp -r .vim/bundle/"$1" ~/.vim/bundle
     fi
 }
 
