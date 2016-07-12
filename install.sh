@@ -39,6 +39,11 @@ function check_pip_installed() {
     fi
 }
 
+function prompt() {
+    read -p "$1" confirm
+    [[ ${confirm} == "" || ${confirm} == "y" || ${confirm} == "Y" ]]
+}
+
 function prompt_install() {
     read -p "Install $1? [Y/n] " do_install
     [[ ${do_install} == "" || ${do_install} == "y" || ${do_install} == "Y" ]]
@@ -55,9 +60,17 @@ function prompt_vim_plugin_install() {
     fi
 }
 
+function install_you_complete_me() {
+    cd ~/.vim/bundle
+    git clone "https://github.com/Valloric/YouCompleteMe.git" YouCompleteMe
+    cd YouCompleteMe
+    run_as_root apt-get install build-essential cmake
+    run_as_root apt-get install python-dev
+    ./install.py --clang-completer --tern-completer
+}
+
 # only install the required scripts
-read -p "Copy vim configuration? [Y/n] " install_vim
-if [[ ${install_vim} != "n" && ${install_vim} != "N" ]]; then
+if confirm "Copy vim configuration? [Y/n] "; then
     cp .vimrc ~/
     if [[ ! -e ~/.vim ]]; then
         mkdir ~/.vim
@@ -92,8 +105,7 @@ if prompt_install "ZSH"; then
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
     cp .zshrc ~/
     cp -r .zsh ~/
-    read -p "Make ZSH the default shell? [Y/n] " make_default
-    if [[ ${make_default} != "n" && ${make_default} != "N" ]]; then
+    if confirm "Make ZSH the default shell? [Y/n] "; then
         chsh -s $(which zsh)
     fi
 fi
@@ -129,7 +141,6 @@ if prompt_install "vim plugins"; then
         ["vim-fugitive"]="https://github.com/tpope/vim-fugitive.git" \
         ["nerdtree"]="https://github.com/scrooloose/nerdtree.git" \
         ["syntastic"]="https://github.com/scrooloose/syntastic.git" \
-        ["YouCompleteMe"]="https://github.com/Valloric/YouCompleteMe.git" \
         ["numbers.vim"]="https://github.com/myusuf3/numbers.vim.git" \
         ["vim-javascript"]="https://github.com/pangloss/vim-javascript.git" \
         ["vim-jsx"]="https://github.com/mxw/vim-jsx.git" \
@@ -145,6 +156,9 @@ if prompt_install "vim plugins"; then
         for plugin_name in "${!all_plugins[@]}"; do
             prompt_vim_plugin_install ${plugin_name} ${all_plugins[${plugin_name}]}
         done
+    fi
+    if confirm "Install YouCompleteMe? [Y/n] "; then
+        install_you_complete_me
     fi
 fi
 
