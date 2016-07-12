@@ -49,8 +49,10 @@ function check_node_installed() {
             if [[ ${is_mac_os} == "1" ]]; then
                 brew install node
             else
-                curl -sL https://deb.nodesource.com/setup_4.x | \
-                    run_as_root -E bash -
+                cd ~
+                wget https://deb.nodesource.com/setup_4.x -O node_setup
+                chmod +x node_setup
+                run_as_root ./node_setup
                 run_as_root apt-get install -y nodejs
             fi
         fi
@@ -88,12 +90,15 @@ function install_you_complete_me() {
     git submodule update --init --recursive
     run_as_root apt-get install build-essential cmake
     run_as_root apt-get install python-dev
-    check_node_installed
-    if [[ ! $(command -v npm) ]]; then
-        ./install.py --clang-completer
-    else
-        run_as_root npm install -g tern
+    if prompt "Install JS support for YouCompleteMe? [Y/n] "; then
+        check_node_installed
+        cd ~/.vim/bundle
+        git clone "https://github.com/ternjs/tern_for_vim.git" tern_for_vim
+        cd tern_for_vim
+        npm install tern
         ./install.py --clang-completer --tern-completer
+    else
+        ./install.py --clang-completer
     fi
 }
 
@@ -193,4 +198,4 @@ if prompt_install "vim plugins"; then
     fi
 fi
 
-echo "All done! \0/"
+echo "All done! \O/"
