@@ -24,28 +24,35 @@ function run_as_root() {
     fi
 }
 
+function check_pip_installed() {
+    if [[ ! $(command -v pip) ]]; then
+        read -p "Install pip? [Y/n] " i_pip
+        if [[ ${i_pip} != "n" && ${i_pip} != "N" ]]; then
+            wget https://bootstrap.pypa.io/get-pip.py
+            python get-pip.py
+        fi
+    fi
+}
+
+function prompt_install() {
+    read -p "Install $1? [Y/n] " do_install
+    [[ ${do_install} == "" || ${do_install} == "y" || ${do_install} == "Y" ]]
+}
+
+function prompt_vim_plugin_install() {
+    if prompt_install "$1"; then
+        cp -r ~/.vim/bundle/"$1" ~/.vim/bundle
+    fi
+}
+
 # only install the required scripts
 read -p "Copy vim config file? [Y/n] " install_vim
 if [[ ${install_vim} != "n" && ${install_vim} != "N" ]]; then
     cp .vimrc ~/
 fi
 
-read -p "Install vim pathogen (required for plugins)? [Y/n] " install_pathogen
-if [[ ${install_pathogen} != "n" && ${install_pathogen} != "N" ]]; then
-    mkdir -p ~/.vim/autoload ~/.vim/bundle && \
-        curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-fi
-
-read -p "Install vim powerline? [Y/n] " install_powerline
-if [[ ${install_powerline} != "n" && ${install_powerline} ]]; then
-    if [[ ! $(command -v pip) ]]; then
-        read -p "pip is needed to install powerline. Install it? [Y/n] " i_pip
-        if [[ ${i_pip} != "n" && ${i_pip} != "N" ]]; then
-            wget https://bootstrap.pypa.io/get-pip.py
-            python get-pip.py
-        fi
-    fi
-
+if prompt_install "vim powerline"; then
+    check_pip_installed
     pip install --user powerline-status
     if [[ ${is_mac_os} == "0" ]]; then
         mkdir -p ~/.fonts
@@ -57,7 +64,7 @@ if [[ ${install_powerline} != "n" && ${install_powerline} ]]; then
     # make sure that we're referencing the correct version of python in vimrc
     py_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
     if [[ -f ~/.vimrc ]]; then
-        sed -i.bak 's/python2.7/python${py_version}/g' ~/.vimrc
+        sed -i.bak "/python2.7/python${py_version}/g" ~/.vimrc
     fi
 else
     if [[ -f ~/.vimrc ]]; then
@@ -65,15 +72,13 @@ else
     fi
 fi
 
-read -p "Install vim Syntastic? [Y/n] " install_syntastic
-if [[ ${install_syntastic} == "n" && ${install_syntastic} == "N" ]]; then
+if prompt_install "vim Syntastic"; then
     if [[ -f ~/.vimrc ]]; then
         sed -i.bak 'let g:/d' ~/.vimrc
     fi
 fi
 
-read -p "Install ZSH? [Y/n] " install_zsh
-if [[ ${install_zsh} != "n" && ${install_zsh} != "N" ]]; then
+if prompt_install "ZSH"; then
     run_as_root apt-get install zsh
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
     cp .zshrc ~/
@@ -84,11 +89,40 @@ if [[ ${install_zsh} != "n" && ${install_zsh} != "N" ]]; then
     fi
 fi
 
-read -p "Install tmux? [Y/n] " install_tmux
-if [[ ${install_tmux} != "n" && ${install_tmux} != "N" ]]; then
+if prompt_install "tmux"; then
     run_as_root apt-get install tmux
     cp .tmux.conf ~/
     cp -r .tmux ~/
+fi
+
+if prompt_install "virtualenvwrapper"; then
+    check_pip_installed
+    pip install virtualenvwrapper
+fi
+
+if prompt_install "vim plugins"; then
+    if prompt_install "pathogen (required for plugins)"; then
+        mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+            curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+    else
+        if [[ -f ~/.vimrc ]]; then
+            sed -i.bak '/pathogen/d' ~/.vimrc
+        fi
+    fi
+
+    all_plugins=( "vim-sensible" "vim-better-whitespace" "vim-surround" \
+        "vim-misc" "vim-fugitive" "nerdtree" "syntastic" "YouCompleteMe" \
+        "numbers" "vim-javascript" "vim-jsx" "typescript-vim" "vim-snipmate" \
+        "ctrlp.vim" )
+    if prompt_install "all plugins"; then
+        for plugin in "${all_plugins[@]}"; do
+            cp -r .vim/bundle/${plugin} ~/.vim/bundle
+        done
+    else
+        for plugin in "${all_plugins[@]}"; do
+            prompt_vim_plugin_install ${plugin}
+        done
+    fi
 fi
 
 echo "All done! \0/"
