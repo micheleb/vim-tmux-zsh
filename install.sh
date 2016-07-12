@@ -61,8 +61,17 @@ function prompt_vim_plugin_install() {
 
 function install_you_complete_me() {
     cd ~/.vim/bundle
+    if [[ -e YouCompleteMe ]]; then
+        if prompt "A YouCompleteMe folder exists. Overwrite it? [Y/n] "; then
+            rm -rf YouCompleteMe
+        else
+            echo "YouCompleteMe installation is SKIPPED"
+            return
+        fi
+    fi
     git clone "https://github.com/Valloric/YouCompleteMe.git" YouCompleteMe
     cd YouCompleteMe
+    git submodule update --init --recursive
     run_as_root apt-get install build-essential cmake
     run_as_root apt-get install python-dev
     ./install.py --clang-completer --tern-completer
@@ -121,12 +130,14 @@ if prompt_install "virtualenvwrapper"; then
 fi
 
 if prompt_install "vim plugins"; then
-    if prompt_install "pathogen (required for plugins)"; then
-        mkdir -p ~/.vim/autoload ~/.vim/bundle && \
-            curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-    else
-        if [[ -f ~/.vimrc && ! -f ~/.vim/autoload/pathogen.vim ]]; then
-            sed -i.bak '/pathogen/d' ~/.vimrc
+    if [[ ! -f ~/.vim/autoload/pathogen.vim ]]; then
+        if prompt_install "pathogen (required for plugins)"; then
+            mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+                curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+        else
+            if [[ -f ~/.vimrc ]]; then
+                sed -i.bak '/pathogen/d' ~/.vimrc
+            fi
         fi
     fi
 
