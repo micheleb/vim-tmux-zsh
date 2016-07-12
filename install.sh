@@ -48,8 +48,9 @@ if [[ ${install_powerline} != "n" && ${install_powerline} ]]; then
 
     pip install --user powerline-status
     if [[ ${is_mac_os} == "0" ]]; then
-       cp "Droid Sans Mono for Powerline.otf" ~/.fonts/
-       run_as_root fc-cache -vf ~/.fonts/
+        mkdir -p ~/.fonts
+        cp "Droid Sans Mono for Powerline.otf" ~/.fonts/
+        run_as_root fc-cache -vf ~/.fonts/
     else
         echo "Install Droid Sans Mono for Powerline using Finder"
     fi
