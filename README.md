@@ -18,21 +18,21 @@ the script will ask what to install
 - vim (if not installed, or if the installed version doesn't have python support)
 - [pathogen][4]
 - a bunch of vim plugins:
-    - [vm-sensible][https://github.com/tpope/vim-sensible]
-    - [vm-better-whitespace][https://github.com/ntpeters/vim-better-whitespace]
-    - [tagbar][https://github.com/majutsushi/tagbar]
-    - [vim-surround][https://github.com/tpope/vim-surround]
-    - [vim-misc] [https://github.com/xolox/vim-misc]
-    - [vim-fugitive] [https://github.com/tpope/vim-fugitive]
-    - [nerdtree] [https://github.com/scrooloose/nerdtree]
-    - [syntastic] [https://github.com/scrooloose/syntastic]
-    - [numbers.vim] [https://github.com/myusuf3/numbers.vim]
-    - [vim-javascript] [https://github.com/pangloss/vim-javascript]
-    - [vim-jsx] [https://github.com/mxw/vim-jsx]
-    - [typescript-vim] [https://github.com/leafgarland/typescript-vim]
-    - [vim-snipmate] [https://github.com/garbas/vim-snipmate]
-    - [ctrlp.vim] [https://github.com/ctrlpvim/ctrlp.vim]
-    - [YouCompleteMe] [https://github.com/Valloric/YouCompleteMe.git]
+    - [vm-sensible](https://github.com/tpope/vim-sensible)
+    - [vm-better-whitespace](https://github.com/ntpeters/vim-better-whitespace)
+    - [tagbar](https://github.com/majutsushi/tagbar)
+    - [vim-surround](https://github.com/tpope/vim-surround)
+    - [vim-misc](https://github.com/xolox/vim-misc)
+    - [vim-fugitive](https://github.com/tpope/vim-fugitive)
+    - [nerdtree](https://github.com/scrooloose/nerdtree)
+    - [syntastic](https://github.com/scrooloose/syntastic)
+    - [numbers.vim](https://github.com/myusuf3/numbers.vim)
+    - [vim-javascript](https://github.com/pangloss/vim-javascript)
+    - [vim-jsx](https://github.com/mxw/vim-jsx)
+    - [typescript-vim](https://github.com/leafgarland/typescript-vim)
+    - [vim-snipmate](https://github.com/garbas/vim-snipmate)
+    - [ctrlp.vim](https://github.com/ctrlpvim/ctrlp.vim)
+    - [YouCompleteMe](https://github.com/Valloric/YouCompleteMe.git)
         - with the optional [tern for vim][5] to support Javascript
         - if node is not installed, the script installs it, as well
 
@@ -40,8 +40,8 @@ the script will ask what to install
 So far, the script works on Linux (Debian Wheezy and up, Ubuntu 14 and up) and
 Mac OSX 11.
 
-[1] https://github.com/robbyrussell/oh-my-zsh/
-[2] https://github.com/nicknisi/vim-workshop/blob/master/tmux.conf
-[3] http://virtualenvwrapper.readthedocs.io/
-[4] https://github.com/tpope/vim-pathogen
-[5] https://github.com/ternjs/tern\_for\_vim.git
+[1]: https://github.com/robbyrussell/oh-my-zsh/
+[2]: https://github.com/nicknisi/vim-workshop/blob/master/tmux.conf
+[3]: http://virtualenvwrapper.readthedocs.io/
+[4]: https://github.com/tpope/vim-pathogen
+[5]: https://github.com/ternjs/tern\_for\_vim.git

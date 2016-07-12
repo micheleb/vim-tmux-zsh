@@ -111,11 +111,12 @@ function install_vim() {
         brew install macvim --with-override-system-vim
         brew linkapps
     else
-        run_as_root apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev libgtk2.0-dev libatk1.0-dev libbonoboui2-dev libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev git
+        run_as_root apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev libgtk2.0-dev libatk1.0-dev libbonoboui2-dev libcairo2-dev libx11-dev libxpm-dev libxt-dev python${py_version}-dev git
         if [[ ! -e ~/git ]]; then
             mkdir ~/git
         fi
         cd ~/git
+        apt-get build-dep vim-common
         git clone https://github.com/vim/vim.git
         cd vim
         ./configure --with-features=huge --enable-multibyte \
