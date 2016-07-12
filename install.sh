@@ -236,11 +236,10 @@ if [[ "${has_vim}" == "1" ]]; then
 
     if prompt_install "vim powerline"; then
         check_pip_installed
-        pip install --user powerline-status
+        pip install powerline-status
         if [[ ${is_mac_os} == "0" ]]; then
-            mkdir -p ~/.fonts
-            cp "Droid Sans Mono for Powerline.otf" ~/.fonts/
-            run_as_root fc-cache -vf ~/.fonts/
+            run_as_root cp "Droid Sans Mono for Powerline.otf" /usr/share/fonts/
+            run_as_root fc-cache -vf /usr/share/fonts/
         else
             echo "Install Droid Sans Mono for Powerline using Finder"
         fi
