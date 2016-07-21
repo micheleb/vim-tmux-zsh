@@ -12,11 +12,15 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 set pastetoggle=<F2>
+nmap <F3> ysiw
+nmap <F4> cs
+nmap <F5> ds
 autocmd BufWritePre * StripWhitespace
 hi Normal ctermbg=none
 highlight NonText ctermbg=none
 let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_flow = 1
+
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
