@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# we need bash 4 to use associative arrays
-if ((BASH_VERSINFO[0] < 4)); then
-    echo "Sorry, we need bash version 4 or higher to run this script"
-fi
-
 # cd into the script's folder; on Mac OS: readlink doesn't have the -f option
 # by default, but package coreutils contains a greadlink command that does
 is_mac_os=0
@@ -27,6 +22,14 @@ function run_as_root() {
         "$@"
     else
         sudo "$@"
+    fi
+}
+
+function os_install() {
+    if [[ ${is_mac_os} == "1" ]]; then
+        sudo brew install "$@"
+    else
+        sudo apt-get install "$@"
     fi
 }
 
@@ -54,7 +57,7 @@ function check_node_installed() {
                 wget https://deb.nodesource.com/setup_4.x -O node_setup
                 chmod +x node_setup
                 run_as_root ./node_setup
-                run_as_root apt-get install -y nodejs
+                os_install nodejs
             fi
         fi
     fi
@@ -91,8 +94,8 @@ function install_you_complete_me() {
     git clone "https://github.com/Valloric/YouCompleteMe.git" YouCompleteMe
     cd YouCompleteMe
     git submodule update --init --recursive
-    run_as_root apt-get install build-essential cmake
-    run_as_root apt-get install python-dev
+    os_install build-essential cmake
+    os_install python-dev
     if prompt "Install JS support for YouCompleteMe? [Y/n] "; then
         check_node_installed
         cd ~/.vim/bundle
@@ -111,12 +114,12 @@ function install_vim() {
         brew install macvim --with-override-system-vim
         brew linkapps
     else
-        run_as_root apt-get install libncurses5-dev libgnome2-dev libgnomeui-dev libgtk2.0-dev libatk1.0-dev libbonoboui2-dev libcairo2-dev libx11-dev libxpm-dev libxt-dev python${py_version}-dev git
+        os_install libncurses5-dev libgnome2-dev libgnomeui-dev libgtk2.0-dev libatk1.0-dev libbonoboui2-dev libcairo2-dev libx11-dev libxpm-dev libxt-dev python${py_version}-dev git
         if [[ ! -e ~/git ]]; then
             mkdir ~/git
         fi
         cd ~/git
-        apt-get build-dep vim-common
+        os_install build-dep vim-common
         git clone https://github.com/vim/vim.git
         cd vim
         ./configure --with-features=huge --enable-multibyte \
@@ -145,31 +148,33 @@ function install_vim_plugins() {
             fi
         fi
 
-        declare -A all_plugins
-
-        all_plugins=( \
-            ["vim-sensible"]="git://github.com/tpope/vim-sensible.git" \
-            ["vim-better-whitespace"]="git://github.com/ntpeters/vim-better-whitespace.git" \
-            ["tagbar"]="git://github.com/majutsushi/tagbar" \
-            ["vim-surround"]="git://github.com/tpope/vim-surround.git" \
-            ["vim-misc"]="https://github.com/xolox/vim-misc.git" \
-            ["vim-fugitive"]="https://github.com/tpope/vim-fugitive.git" \
-            ["nerdtree"]="https://github.com/scrooloose/nerdtree.git" \
-            ["syntastic"]="https://github.com/scrooloose/syntastic.git" \
-            ["numbers.vim"]="https://github.com/myusuf3/numbers.vim.git" \
-            ["vim-javascript"]="https://github.com/pangloss/vim-javascript.git" \
-            ["vim-jsx"]="https://github.com/mxw/vim-jsx.git" \
-            ["typescript-vim"]="https://github.com/leafgarland/typescript-vim.git" \
-            ["vim-snipmate"]="https://github.com/garbas/vim-snipmate.git" \
-            ["ctrlp.vim"]="https://github.com/ctrlpvim/ctrlp.vim.git" )
+        all_plugins=(
+            "vim-sensible:tpope"
+            "vim-better-whitespace:ntpeters"
+            "tagbar:majutsushi"
+            "vim-surround:tpope"
+            "vim-misc:xolox"
+            "vim-fugitive:tpope"
+            "nerdtree:scrooloose"
+            "syntastic:scrooloose"
+            "numbers.vim:myusuf3"
+            "vim-javascript:pangloss"
+            "vim-jsx:mxw"
+            "typescript-vim:leafgarland"
+            "vim-snipmate:garbas"
+            "ctrlp.vim:kien" )
 
         if prompt_install "all plugins"; then
-            for plugin_name in "${!all_plugins[@]}"; do
-                install_vim_plugin ${all_plugins[${plugin_name}]} ${plugin_name}
+            for plugin in "${all_plugins[@]}"; do
+                plugin_name=${plugin%%:*}
+                author=${plugin#*:}
+                install_vim_plugin "https://github.com/"${author}/${plugin_name}".git" ${plugin_name}
             done
         else
-            for plugin_name in "${!all_plugins[@]}"; do
-                prompt_vim_plugin_install ${plugin_name} ${all_plugins[${plugin_name}]}
+            for plugin in "${all_plugins[@]}"; do
+                plugin_name=${plugin%%:*}
+                author=${plugin#*:}
+                prompt_vim_plugin_install ${plugin_name} "https://github.com/"${author}/${plugin_name}".git"
             done
         fi
         if prompt "Install YouCompleteMe? [Y/n] "; then
@@ -182,7 +187,7 @@ function install_vim_plugins() {
 py_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
 
 if prompt_install "ZSH"; then
-    run_as_root apt-get install zsh
+    os_install zsh
     sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
     if prompt "Make ZSH the default shell? [Y/n] "; then
         chsh -s $(which zsh)
@@ -192,7 +197,7 @@ if prompt_install "ZSH"; then
 fi
 
 if prompt_install "tmux"; then
-    run_as_root apt-get install tmux
+    os_install tmux
     cp .tmux.conf ~/
     cp -r .tmux ~/
 fi
@@ -217,7 +222,11 @@ if [[ ${has_vim} == "0" || $(vim --version | grep -c '+python') == 0 ]]; then
     if prompt "we need a modern version of vim with python support. Install it? [Y/n] "; then
         if [[ ${has_vim} == "1" ]]; then
             # uninstall it first
-            run_as_root apt-get remove vim
+            if [[ ${is_mac_os} == "1" ]]; then
+                run_as_root brew rm vim
+            else
+                run_as_root apt-get remove vim
+            fi
         fi
         install_vim
         has_vim=1
