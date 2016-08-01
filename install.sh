@@ -150,6 +150,7 @@ function install_vim_plugins() {
 
         all_plugins=(
             "vim-sensible:tpope"
+            "vim-unimpaired:tpope"
             "vim-better-whitespace:ntpeters"
             "tagbar:majutsushi"
             "vim-surround:tpope"
