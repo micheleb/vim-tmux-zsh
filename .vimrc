@@ -15,6 +15,14 @@ set pastetoggle=<F2>
 nmap <F3> ysiw
 nmap <F4> cs
 nmap <F5> ds
+" navigate between panes in a more natural way
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+" split panes to the right and below
+set splitbelow
+set splitright
 autocmd BufWritePre * StripWhitespace
 hi Normal ctermbg=none
 highlight NonText ctermbg=none
