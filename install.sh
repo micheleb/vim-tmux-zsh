@@ -152,6 +152,7 @@ function install_vim_plugins() {
             "vim-sensible:tpope"
             "vim-unimpaired:tpope"
             "vim-better-whitespace:ntpeters"
+            "vim-python-pep8-indent:hynek"
             "tagbar:majutsushi"
             "vim-surround:tpope"
             "vim-misc:xolox"
