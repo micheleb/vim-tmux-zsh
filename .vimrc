@@ -29,6 +29,13 @@ highlight NonText ctermbg=none
 let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_flow = 1
 
+nmap <F3> ysiw
+nmap <F4> cs
+nmap <F5> ds
+
+let mapleader = "\<Space>"
+nmap <Leader><Leader> :YcmCompleter GoTo<CR>
+
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -45,3 +52,6 @@ let g:Powerline_symbols = 'fancy'
 set laststatus=2
 let g:numbers_exclude = ['nerdtree']
 highlight LineNr ctermbg=39
+
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_autoclose_preview_window_after_completion = 1
