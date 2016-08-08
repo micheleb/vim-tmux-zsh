@@ -248,6 +248,7 @@ if [[ "${has_vim}" == "1" ]]; then
         fi
         cp -r .vim/colors ~/.vim/
         cp -r .vim/syntax ~/.vim/
+        cp -r .vim/templates ~/.vim/
     fi
 
     if prompt_install "vim powerline"; then
